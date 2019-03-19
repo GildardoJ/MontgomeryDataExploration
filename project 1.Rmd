@@ -1,0 +1,33 @@
+---
+title: "Project 1"
+author: "Gildardo, Ashish"
+date: "March 7, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+dat = read.csv("file:///C:/Users/gilda/Documents/CSUMBSpring2019/CST383/Crash_Reporting_-_Drivers_Data.csv")
+
+```
+
+Plot of time of day
+hours in 24hr time with plot
+
+```{r}
+
+times = strptime(as.character(dat$Crash.Date.Time),"%m/%d/%Y %I:%M:%S %p")
+hour = times$hour
+barplot(table(hour),pch='-')
+
+```
+
+
+
+
+
+
+
