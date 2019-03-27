@@ -25,9 +25,37 @@ barplot(table(hour),pch='-')
 
 ```
 
+We where curious of the rate of accidents per month was the same throughout the Year for the four years of data. The plot clearly shows and increase of accidents in May and the last three moths of the Year. 
+
+Plot severity of the accidents by the hour. 
 
 
 
 
+```{r}
+times = strptime(as.character(dat$Crash.Date.Time),"%m/%d/%Y %I:%M:%S %p")
+year2015 = times[times$year == 115]
+year2016 = times[times$year == 116]
+year2017 = times[times$year == 117]
+year2018 = times[times$year == 118]
+
+plot(table(year2015$mon), main ="Rates of accidetnts per Month", type = "l",xaxt = "n" ,xlab = "Month", ylab = "Number of accidents", ylim = c(1000,2500))
+axis(1, at=0:11, labels=c("Jan","Feb","Mar", "April","May","Jun","July","Aug","Sep","Oct","Nov", "Dec"))
+points(table(year2016$mon), type = "l", col = "blue")
+points(table(year2017$mon),  type = "l", col = "red")
+points(table(year2018$mon),  type = "l", col = "purple")
+grid()
+legend(0, 2500, legend=c("2017","2016","2018","2015"),col=c("red", "blue","purple","black"), lty=c(1,1,1,1), cex=0.8, title ="Year")
+
+```
 
 
+Days that rained during the year
+```{r}
+times = strptime(as.character(dat$Crash.Date.Time),"%m/%d/%Y %I:%M:%S %p")
+dat1$dates = times
+
+
+```
+
+What kind of vehicles are affected more by rain than other vehicles. 
