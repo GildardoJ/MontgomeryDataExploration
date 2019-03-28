@@ -26,8 +26,27 @@ barplot(table(hour),pch='-')
 ```
 
 We where curious of the rate of accidents per month was the same throughout the Year for the four years of data. The plot clearly shows and increase of accidents in May and the last three moths of the Year. 
-
-Plot severity of the accidents by the hour. 
+```{r}
+# Injury Type per hour of a day 
+dat$hour = times$hour
+injuries_type = as.data.frame(t(aggregate(Injury.Severity ~ hour, data=dat, FUN=table)[,2]))
+colnames(injuries_type) = aggregate(Injury.Severity ~ hour, data=dat, FUN=table)[,1]
+injuries_type = t(injuries_type)
+injuries_type = scale(injuries_type)
+plot(injuries_type[,1],type='l',main = "Injury type per hour of a day",xlab = "Hours",ylab="Scaled accidents")
+points(injuries_type[,2],type='l',col='blue')
+points(injuries_type[,3],type='l',col='red')
+points(injuries_type[,4],type='l',col='green')
+points(injuries_type[,5],type='l',col='brown')
+legend(0.6, 2.8, legend=c("Fatal","None","Possible Injury","Minor","Serios"),col=c("black", "blue","red","green","brown"), lty=c(1,1,1,1,1), cex=0.8, title ="Injury Type")
+grid()
+```
+The plot is the scaled rate of each type of injury for every hour of the day.
+In the plot above we can see that fatal injury has peaked in the low traffic hours.
+Where the fatal injuries drop to the minimum in rush hours.
+From this observation, we can conclude bumper to bumper traffic of the rush hours slow down the cars resulting in a fall in fatal injuries.
+On the other hand, in low traffic times, drivers can go fast resulting in increasing severity of injuries.
+The evening rush hour traffic has an interesting spike in fatal accidents as soon as the traffic starts to dissipate.
 
 
 
@@ -39,18 +58,81 @@ year2016 = times[times$year == 116]
 year2017 = times[times$year == 117]
 year2018 = times[times$year == 118]
 
-plot(table(year2015$mon), main ="Rates of accidetnts per Month", type = "l",xaxt = "n" ,xlab = "Month", ylab = "Number of accidents", ylim = c(1000,2500))
+plot(table(year2015$mon), main ="Rates of accidents per Month", type = "l",xaxt = "n" ,xlab = "Month", ylab = "Number of accidents", ylim = c(1000,2500))
 axis(1, at=0:11, labels=c("Jan","Feb","Mar", "April","May","Jun","July","Aug","Sep","Oct","Nov", "Dec"))
 points(table(year2016$mon), type = "l", col = "blue")
 points(table(year2017$mon),  type = "l", col = "red")
 points(table(year2018$mon),  type = "l", col = "purple")
 grid()
-legend(0, 2500, legend=c("2017","2016","2018","2015"),col=c("red", "blue","purple","black"), lty=c(1,1,1,1), cex=0.8, title ="Year")
+legend(0, 2500, legend=c("2015","2016","2017","2018"),col=c("black", "blue","red","purple"), lty=c(1,1,1,1), cex=0.8, title ="Year")
+
+```
+
+We also wondered what the accident rate was throught the year. So we plotted the average rain fall for every year in the data by month. The plot clearly shows and increase in accidents in May and the last three months of each year. 
+
+```{r}
+#
+dat2 = read.csv("file:///C:/Users/gilda/Documents/CSUMBSpring2019/CST383/Mont2010.csv") #weather data from NOAA ncdc.noaa.gov
+times = strptime(as.character(dat$Crash.Date.Time),"%m/%d/%Y %I:%M:%S %p")
+year2015 = times[times$year == 115]
+year2016 = times[times$year == 116]
+year2017 = times[times$year == 117]
+year2018 = times[times$year == 118]
+rain = aggregate(dat2$MLY.PRCP.50PCTL ~ dat2$DATE, FUN = mean)
+#rain = scale(rain)
+
+snow = dat2$MLY.SNOW.NORMAL ~ dat2$DATE
+#snow = scale(snow)
+
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+rain <- as.data.frame(lapply(rain, normalize))
+
+xmonth = c("Jan","Feb","Mar", "April","May","Jun","July","Aug","Sep","Oct","Nov", "Dec")
+
+par(mar= c(5,4,4,6)+0.1)
+plot(table(year2015$mon), main ="Rates of accidents per Month", type = "l",xaxt = "n" ,xlab = "Month", ylab = "Number of accidents", ylim = c(1300,2100))
+axis(1, at=0:11, labels= xmonth)
+points(table(year2016$mon), type = "l", col = "blue")
+points(table(year2017$mon),  type = "l", col = "red")
+points(table(year2018$mon),  type = "l", col = "purple")
+grid()
+legend(0, 2200, legend=c("2015","2016","2017","2018"),col=c("black", "blue","red","purple"), lty=c(1,1,1,1), cex=0.8, title ="Year")
+
+
+
+par(new=TRUE)
+plot( rain, type = "b",col = "green", axes = F, xlab= NA, ylab = NA)
+axis(side = 4)
+mtext(side = 4, line = 3, 'Scaled rain fall, snow')
+par(new = TRUE)
+
+plot( snow, type = "b", col = "brown", axes = F, xlab= NA, ylab = NA)
+
 
 ```
 
 
-Days that rained during the year
+```{r}
+year2015 = times[times$year == 115]
+year2016 = times[times$year == 116]
+year2017 = times[times$year == 117]
+year2018 = times[times$year == 118]
+weekday = c("Sun","Mon", "Tue", "Wed", "Thu","Fri","Sat","","","","","")
+
+plot(table(year2015$wday), main ="Rates of accidents per day of the week", type = "l",xaxt = "n" ,xlab = "Month", ylab = "Number of accidents", ylim = c(1300,4000))
+axis(1, at=0:11, labels=weekday)
+points(table(year2016$wday), type = "l", col = "blue")
+points(table(year2017$wday),  type = "l", col = "red")
+points(table(year2018$wday),  type = "l", col = "purple")
+grid()
+legend("bottom", 2500, legend=c("2015","2016","2017","2018"),col=c("black", "blue","red","purple"), lty=c(1,1,1,1), cex=0.8, title ="Year")
+```
+We wondered about accidents by the week day. From the graph we can conclude that the Monday through Friday commute results in higher vehicle density on the road. As such that will directly increase the number of accidents. We wonder why the accidents for Wednsday and Thursday incresed for 2016, there must of been some factor change in the driving condition that contributed to the to the increase in accidents. Driving conditions like weather changes on sertain days, maybe construction on sertain routes. 
+
+
 ```{r}
 times = strptime(as.character(dat$Crash.Date.Time),"%m/%d/%Y %I:%M:%S %p")
 dat1$dates = times

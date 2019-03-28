@@ -258,3 +258,112 @@ plot(dat$Surface.Condition ~ dat$Weather)
 barplot(sort(table(dat[found,]$Vehicle.Damage.Extent), decreasing = TRUE))
 barplot(sort(table(dat$Vehicle.Damage.Extent), decreasing = TRUE))
 
+
+#Montgomery county weather for 2010
+
+dat2 = read.csv("file:///C:/Users/gilda/Documents/CSUMBSpring2019/CST383/Mont2010.csv")
+summary(dat2)
+names(dat2)
+plot(dat2$MTD.PRCP.NORMAL)
+plot(dat2$DATE)
+summary(dat2$DATE)
+
+rain = aggregate(dat2$MLY.PRCP.50PCTL ~ dat2$DATE, FUN = mean)
+plot(rain, type = "l")                              # mean rain
+plot(dat2$MLY.PRCP.50PCTL ~ dat2$DATE)
+plot(dat2$MLY.SNOW.50PCTL ~ dat2$DATE, type = "l") # snow
+
+
+
+points(dat2$MLY.SNOW.25PCTL ~ dat2$DATE, col = "red", pch = 20)
+plot(dat2$MLY.TMIN.NORMAL ~ dat2$DATE, col = "green", pch = 20)
+
+
+head(dat2$DATE)
+
+layout(title = 'Title',
+       xaxis = list(title = "X-axis title"),
+       yaxis2 = list(side = 'right', overlaying = "y", title = 'secondary y axis', showgrid = FALSE, zeroline = FALSE))
+
+
+#montgomery county rain for 2015 - 18
+
+dat3 = read.csv("file:///C:/Users/gilda/Documents/CSUMBSpring2019/CST383/Mont2015-18.csv")
+times = strptime(as.character(dat$Crash.Date.Time),"%m/%d/%Y %I:%M:%S %p")
+summary(dat3)
+names(dat3)
+dat3 = sort(dat3$DATE, decreasing = FALSE)
+
+#rain2 = aggregate(dat3$PRCP ~ dat3$DATE, FUN = mean)
+plot(rain2, type = "l")
+plot(dat3$PRCP ~ dat3$DATE, type = "l")
+points(dat3$PRCP ~ dat3$DATE)
+
+nrow(dat3)/48
+unique(dat3$DATE)
+
+sum(is.na(dat3$DATE))
+summary(dat3)
+dat3[dat3$PRCP > 7.5 & dat3$PRCP < 8.1 & dat3$DATE == "2015-09",]
+
+plot(dat3$PRCP ~ dat3$DATE)
+grid()
+
+#injury severity
+dat1$dates
+hour = times$hour
+injuries = aggregate(Injury.Severity~ hour, data=injury, table)
+injuries
+injury = dat1[dat1$Injury.Severity == "FATAL INJURY",]
+injury$dates$hour
+plot(injury ~ injury$dates$hour)
+
+
+#
+dat2 = read.csv("file:///C:/Users/gilda/Documents/CSUMBSpring2019/CST383/Mont2010.csv") #weather data from NOAA ncdc.noaa.gov
+times = strptime(as.character(dat$Crash.Date.Time),"%m/%d/%Y %I:%M:%S %p")
+year2015 = times[times$year == 115]
+year2016 = times[times$year == 116]
+year2017 = times[times$year == 117]
+year2018 = times[times$year == 118]
+rain = aggregate(dat2$MLY.PRCP.50PCTL ~ dat2$DATE, FUN = mean)
+#rain = scale(rain)
+
+snow = dat2$MLY.SNOW.NORMAL ~ dat2$DATE
+#snow = scale(snow)
+
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+rain <- as.data.frame(lapply(rain, normalize))
+
+xmonth = c("Jan","Feb","Mar", "April","May","Jun","July","Aug","Sep","Oct","Nov", "Dec")
+
+par(mar= c(5,4,4,6)+0.1)
+plot(table(year2015$mon), main ="Rates of accidents per Month", type = "l",xaxt = "n" ,xlab = "Month", ylab = "Number of accidents", ylim = c(1300,2100))
+axis(1, at=0:11, labels= xmonth)
+points(table(year2016$mon), type = "l", col = "blue")
+points(table(year2017$mon),  type = "l", col = "red")
+points(table(year2018$mon),  type = "l", col = "purple")
+grid()
+legend(0, 2200, legend=c("2015","2016","2017","2018"),col=c("black", "blue","red","purple"), lty=c(1,1,1,1), cex=0.8, title ="Year")
+
+
+
+par(new=TRUE)
+plot( rain, type = "b",col = "green", axes = F, xlab= NA, ylab = NA)
+axis(side = 4)
+mtext(side = 4, line = 3, 'Scaled rain fall, snow')
+par(new = TRUE)
+
+plot( snow, type = "b", col = "brown", axes = F, xlab= NA, ylab = NA)
+
+
+
+#plot(rain, type = "l")
+with(table(year2015$mon), plot(rain, type = "l", axes=F, xlab=NA, ylab=NA))
+#
+legend("topright",
+       legend=c(expression(-log[10](italic(p))), "N genes"),
+       lty=c(1,0), pch=c(NA, 16), col=c("red3", "black"))
